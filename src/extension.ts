@@ -785,7 +785,7 @@ function generateLiveWebviewHtml(config: SnapshotConfig): string {
         .theme-select { padding: 7px 10px; border: 1px solid ${isDarkOuter ? '#3a3a4a' : '#ccc'}; border-radius: 6px; font-size: 12px; background: ${toolbarBtnBg}; color: ${toolbarText}; cursor: pointer; outline: none; max-width: 150px; }
         .theme-select:hover { border-color: ${isDarkOuter ? '#5a5a6a' : '#999'}; }
         #status { margin-top: 12px; font-size: 12px; color: ${toolbarSubtext}; min-height: 18px; }
-        canvas { display: block; border-radius: 12px; }
+        canvas { display: block; }
         #empty-state { color: ${isDarkOuter ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)'}; font-size: 16px; text-align: center; padding: 80px 20px; letter-spacing: 0.5px; }
     </style>
 </head>
@@ -980,12 +980,18 @@ function generateLiveWebviewHtml(config: SnapshotConfig): string {
             vscode.postMessage({ type: 'changeTheme', theme: themeSelect.value, fontSize: currentFontSize });
         });
         saveBtn.addEventListener('click', function() {
+            if (!currentCode) { status.textContent = 'No code to save!'; return; }
             status.textContent = 'Saving...'; saveBtn.disabled = true; copyBtn.disabled = true;
-            vscode.postMessage({ type: 'save', data: canvas.toDataURL('image/png').split(',')[1] });
+            var data = canvas.toDataURL('image/png');
+            if (!data || data.length < 200) { status.textContent = 'Error: empty canvas'; saveBtn.disabled = false; copyBtn.disabled = false; return; }
+            vscode.postMessage({ type: 'save', data: data.split(',')[1] });
         });
         copyBtn.addEventListener('click', function() {
+            if (!currentCode) { status.textContent = 'No code to copy!'; return; }
             status.textContent = 'Copying...'; saveBtn.disabled = true; copyBtn.disabled = true;
-            vscode.postMessage({ type: 'copy', data: canvas.toDataURL('image/png').split(',')[1] });
+            var data = canvas.toDataURL('image/png');
+            if (!data || data.length < 200) { status.textContent = 'Error: empty canvas'; saveBtn.disabled = false; copyBtn.disabled = false; return; }
+            vscode.postMessage({ type: 'copy', data: data.split(',')[1] });
         });
     })();
     </script>
@@ -1122,9 +1128,17 @@ export function activate(context: vscode.ExtensionContext) {
 
         panel.webview.onDidReceiveMessage(async (message: { type: string; data?: string; theme?: string; fontSize?: number }) => {
             if (message.type === 'save' && message.data) {
+                if (!message.data || message.data.length < 100) {
+                    panel.webview.postMessage({ type: 'done', message: 'No code selected!' });
+                    return;
+                }
                 await saveImageToFile(message.data);
                 panel.webview.postMessage({ type: 'done', message: 'Image saved!' });
             } else if (message.type === 'copy' && message.data) {
+                if (!message.data || message.data.length < 100) {
+                    panel.webview.postMessage({ type: 'done', message: 'No code selected!' });
+                    return;
+                }
                 await copyImageToClipboard(message.data);
                 panel.webview.postMessage({ type: 'done', message: 'Copied to clipboard!' });
             } else if (message.type === 'changeTheme' && message.theme) {
