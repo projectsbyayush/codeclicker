@@ -116,7 +116,7 @@ npm run compile
 
 ## License
 
-MIT License - Copyright (c) 2025 Ayush Patil.
+MIT License - Copyright (c) 2026 Ayush Patil.
 
 ## Contributing
 
