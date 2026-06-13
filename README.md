@@ -141,6 +141,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 <p align="center">
   <a href="https://github.com/projectsbyayush/codeimage">
-    <img src="https://github.com/projectsbyayush/codeimage/raw/main/resources/icon.svg" alt="CodeImage Logo" width="128">
+    <img src="https://github.com/projectsbyayush/codeimage/raw/main/resources/icon.png" alt="CodeImage Logo" width="128">
   </a>
 </p>
