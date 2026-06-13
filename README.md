@@ -1,4 +1,4 @@
-# codeimage
+# codeclick
 
 Generate beautiful code screenshots with macOS terminal styling for VS Code.
 
@@ -6,8 +6,8 @@ Turn your code into stunning, shareable images directly from Visual Studio Code.
 
 **Resources**
 
-- GitHub: https://github.com/projectsbyayush/codeimage
-- Report Issues: https://github.com/projectsbyayush/codeimage/issues
+- GitHub: https://github.com/projectsbyayush/codeclick
+- Report Issues: https://github.com/projectsbyayush/codeclick/issues
 - License: MIT
 
 ## Features
@@ -25,7 +25,7 @@ Turn your code into stunning, shareable images directly from Visual Studio Code.
 
 ## Quick Start
 
-1. Install the extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=AyushPatil.codeimage)
+1. Install the extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=AyushPatil.codeclick)
 2. Open any code file in VS Code
 3. Click the **camera icon** in the editor title bar (top-right)
 4. Choose your theme from the dropdown
@@ -71,13 +71,13 @@ CodeImage provides syntax highlighting for:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `codeimage.fontSize` | `12` | Font size for the code in the snapshot |
-| `codeimage.fontFamily` | `"JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, monospace` | Font family for the code |
-| `codeimage.lineNumbers` | `true` | Show line numbers in the snapshot |
-| `codeimage.windowPadding` | `32` | Padding around the code block inside the window |
-| `codeimage.outerPadding` | `48` | Padding around the window frame |
-| `codeimage.visualTheme` | `"classic-dark"` | Visual theme for the output image |
-| `codeimage.transparentBackground` | `false` | Make the outer background transparent |
+| `codeclick.fontSize` | `12` | Font size for the code in the snapshot |
+| `codeclick.fontFamily` | `"JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, monospace` | Font family for the code |
+| `codeclick.lineNumbers` | `true` | Show line numbers in the snapshot |
+| `codeclick.windowPadding` | `32` | Padding around the code block inside the window |
+| `codeclick.outerPadding` | `48` | Padding around the window frame |
+| `codeclick.visualTheme` | `"classic-dark"` | Visual theme for the output image |
+| `codeclick.transparentBackground` | `false` | Make the outer background transparent |
 
 ## Keyboard Shortcuts
 
@@ -92,20 +92,20 @@ CodeImage provides syntax highlighting for:
 
 1. Open VS Code
 2. Go to Extensions (`Ctrl+Shift+X`)
-3. Search for "codeimage"
+3. Search for "codeclick"
 4. Click **Install**
 
 ### From VSIX
 
 ```bash
-code --install-extension AyushPatil.codeimage-1.0.0.vsix
+code --install-extension AyushPatil.codeclick-1.0.0.vsix
 ```
 
 ### From Source
 
 ```bash
-git clone https://github.com/projectsbyayush/codeimage.git
-cd codeimage
+git clone https://github.com/projectsbyayush/codeclick.git
+cd codeclick
 npm install
 npm run compile
 ```

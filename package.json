@@ -1,6 +1,6 @@
 {
-  "name": "codeimage",
-  "displayName": "codeimage",
+  "name": "codeclick",
+  "displayName": "codeclick",
   "description": "Generate beautiful code screenshots with macOS terminal styling. Export as PNG or copy to clipboard.",
   "version": "1.0.0",
   "publisher": "AyushPatil",
@@ -40,16 +40,16 @@
   "icon": "resources/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/projectsbyayush/codeimage"
+    "url": "https://github.com/projectsbyayush/codeclick"
   },
   "bugs": {
-    "url": "https://github.com/projectsbyayush/codeimage/issues"
+    "url": "https://github.com/projectsbyayush/codeclick/issues"
   },
-  "homepage": "https://github.com/projectsbyayush/codeimage#readme",
+  "homepage": "https://github.com/projectsbyayush/codeclick#readme",
   "contributes": {
     "commands": [
       {
-        "command": "codeimage.takeSnapshot",
+        "command": "codeclick.takeSnapshot",
         "title": "Take Code Snapshot",
         "icon": {
           "light": "./resources/snapshot-light.svg",
@@ -57,21 +57,21 @@
         }
       },
       {
-        "command": "codeimage.copyToClipboard",
+        "command": "codeclick.copyToClipboard",
         "title": "Copy Code Snapshot to Clipboard"
       }
     ],
     "menus": {
       "editor/title": [
         {
-          "command": "codeimage.takeSnapshot",
+          "command": "codeclick.takeSnapshot",
           "group": "navigation"
         }
       ],
       "editor/context": [
         {
           "when": "editorHasSelection",
-          "command": "codeimage.copyToClipboard",
+          "command": "codeclick.copyToClipboard",
           "group": "9_cutcopypaste"
         }
       ]
@@ -79,37 +79,37 @@
     "configuration": {
       "title": "CodeImage",
       "properties": {
-        "codeimage.fontSize": {
+        "codeclick.fontSize": {
           "type": "number",
           "default": 12,
           "description": "Font size for the code in the snapshot"
         },
-        "codeimage.fontFamily": {
+        "codeclick.fontFamily": {
           "type": "string",
           "default": "\"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", Consolas, monospace",
           "description": "Font family for the code in the snapshot"
         },
-        "codeimage.lineNumbers": {
+        "codeclick.lineNumbers": {
           "type": "boolean",
           "default": true,
           "description": "Show line numbers in the snapshot"
         },
-        "codeimage.windowPadding": {
+        "codeclick.windowPadding": {
           "type": "number",
           "default": 32,
           "description": "Padding around the code block inside the window"
         },
-        "codeimage.background": {
+        "codeclick.background": {
           "type": "string",
           "default": "#1e1e2e",
           "description": "Background color of the code window"
         },
-        "codeimage.titleBarColor": {
+        "codeclick.titleBarColor": {
           "type": "string",
           "default": "#2d2d3f",
           "description": "Background color of the title bar"
         },
-        "codeimage.theme": {
+        "codeclick.theme": {
           "type": "string",
           "default": "dark",
           "enum": [
@@ -118,12 +118,12 @@
           ],
           "description": "Color theme for the snapshot"
         },
-        "codeimage.transparentBackground": {
+        "codeclick.transparentBackground": {
           "type": "boolean",
           "default": false,
           "description": "Make the outer background transparent"
         },
-        "codeimage.visualTheme": {
+        "codeclick.visualTheme": {
           "type": "string",
           "default": "classic-dark",
           "enum": [
@@ -142,7 +142,7 @@
           ],
           "description": "Visual theme for the output image"
         },
-        "codeimage.outerPadding": {
+        "codeclick.outerPadding": {
           "type": "number",
           "default": 48,
           "description": "Padding around the window frame"
