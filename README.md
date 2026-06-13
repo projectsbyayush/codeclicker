@@ -98,7 +98,7 @@ CodeImage provides syntax highlighting for:
 ### From VSIX
 
 ```bash
-code --install-extension AyushPatil.codeimage-0.2.0.vsix
+code --install-extension AyushPatil.codeimage-1.0.0.vsix
 ```
 
 ### From Source

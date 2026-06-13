@@ -423,22 +423,45 @@ interface Token {
     type: string;
 }
 
+const ALL_KEYWORDS: Record<string, boolean> = {};
+const _jsKw = [
+    'abstract', 'arguments', 'async', 'await', 'boolean', 'break', 'byte',
+    'case', 'catch', 'char', 'class', 'const', 'continue', 'debugger',
+    'default', 'delete', 'do', 'double', 'else', 'enum', 'export',
+    'extends', 'false', 'final', 'finally', 'float', 'for', 'from',
+    'function', 'goto', 'if', 'implements', 'import', 'in', 'instanceof',
+    'int', 'interface', 'let', 'long', 'native', 'new', 'null', 'of',
+    'package', 'private', 'protected', 'public', 'return', 'short',
+    'static', 'super', 'switch', 'synchronized', 'this', 'throw',
+    'throws', 'transient', 'true', 'try', 'typeof', 'undefined', 'var',
+    'void', 'volatile', 'while', 'with', 'yield',
+];
+const _pyKw = [
+    'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue',
+    'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from',
+    'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not',
+    'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield',
+];
+const _goKw = [
+    'break', 'case', 'chan', 'const', 'continue', 'default', 'defer',
+    'else', 'fallthrough', 'for', 'func', 'go', 'goto', 'if', 'import',
+    'interface', 'map', 'package', 'range', 'return', 'select', 'struct',
+    'switch', 'type', 'var',
+];
+const _rustKw = [
+    'as', 'async', 'await', 'break', 'const', 'continue', 'crate', 'dyn',
+    'else', 'enum', 'extern', 'fn', 'for', 'if', 'impl', 'in', 'let',
+    'loop', 'match', 'mod', 'move', 'mut', 'pub', 'ref', 'return', 'self',
+    'Self', 'static', 'struct', 'super', 'trait', 'true', 'false', 'type',
+    'unsafe', 'use', 'where', 'while',
+];
+for (const k of [..._jsKw, ..._pyKw, ..._goKw, ..._rustKw]) { ALL_KEYWORDS[k] = true; }
+
 function tokenizeCode(code: string, languageId: string): Token[] {
     const tokens: Token[] = [];
     const lines = code.split('\n');
 
-    const jsKeywords = new Set([
-        'abstract', 'arguments', 'async', 'await', 'boolean', 'break', 'byte',
-        'case', 'catch', 'char', 'class', 'const', 'continue', 'debugger',
-        'default', 'delete', 'do', 'double', 'else', 'enum', 'export',
-        'extends', 'false', 'final', 'finally', 'float', 'for', 'from',
-        'function', 'goto', 'if', 'implements', 'import', 'in', 'instanceof',
-        'int', 'interface', 'let', 'long', 'native', 'new', 'null', 'of',
-        'package', 'private', 'protected', 'public', 'return', 'short',
-        'static', 'super', 'switch', 'synchronized', 'this', 'throw',
-        'throws', 'transient', 'true', 'try', 'typeof', 'undefined', 'var',
-        'void', 'volatile', 'while', 'with', 'yield',
-    ]);
+    const jsKeywords = new Set(_jsKw);
 
     const pyKeywords = new Set([
         'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue',
@@ -671,7 +694,8 @@ function escapeHtml(text: string): string {
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+        .replace(/"/g, '&quot;')
+        .replace(/`/g, '&#96;');
 }
 
 function buildCodeHtml(code: string, languageId: string, config: SnapshotConfig, tokenColors: Record<string, string>): string {
@@ -711,14 +735,10 @@ function buildCodeHtml(code: string, languageId: string, config: SnapshotConfig,
     return html;
 }
 
-function generateWebviewHtml(code: string, languageId: string, config: SnapshotConfig, tokenColors: Record<string, string>): string {
+function generateLiveWebviewHtml(config: SnapshotConfig): string {
     const vt = getVisualTheme(config.visualTheme);
+    const tokenColors = getTokenColors();
     const mergedColors = { ...tokenColors, ...vt.tokens };
-    const codeHtml = buildCodeHtml(code, languageId, config, mergedColors);
-    const fileName = path.basename(vscode.window.activeTextEditor?.document.fileName || 'code');
-    const lines = code.split('\n');
-    const lineNumberWidth = String(lines.length).length;
-
     const isDarkOuter = vt.group === 'dark';
     const textColor = vt.text;
     const lineNumberColor = vt.lineNumber;
@@ -738,111 +758,35 @@ function generateWebviewHtml(code: string, languageId: string, config: SnapshotC
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
     <title>codeimage</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: ${toolbarBg};
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 20px;
         }
         #toolbar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            align-items: center;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: flex; gap: 8px; margin-bottom: 16px;
+            align-items: center; flex-wrap: wrap; justify-content: center;
         }
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s ease; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-primary { background: #007AFF; color: white; }
         .btn-primary:hover:not(:disabled) { background: #0056CC; }
         .btn-secondary { background: ${toolbarBtnBg}; color: ${toolbarText}; }
         .btn-secondary:hover:not(:disabled) { background: ${toolbarBtnHover}; }
-        .font-controls {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: ${toolbarBtnBg};
-            border-radius: 6px;
-            padding: 2px;
-        }
-        .font-btn {
-            width: 30px; height: 30px; border: none; border-radius: 4px;
-            background: transparent; color: ${toolbarText}; font-size: 16px;
-            font-weight: 600; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; transition: background 0.15s;
-        }
+        .font-controls { display: flex; align-items: center; gap: 4px; background: ${toolbarBtnBg}; border-radius: 6px; padding: 2px; }
+        .font-btn { width: 30px; height: 30px; border: none; border-radius: 4px; background: transparent; color: ${toolbarText}; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .font-btn:hover { background: ${toolbarBtnHover}; }
-        .font-size-label {
-            font-size: 12px; color: ${toolbarSubtext};
-            min-width: 36px; text-align: center; user-select: none;
-        }
-        .theme-select {
-            padding: 7px 10px; border: 1px solid ${isDarkOuter ? '#3a3a4a' : '#ccc'};
-            border-radius: 6px; font-size: 12px; background: ${toolbarBtnBg};
-            color: ${toolbarText}; cursor: pointer; outline: none;
-            max-width: 150px;
-        }
+        .font-size-label { font-size: 12px; color: ${toolbarSubtext}; min-width: 36px; text-align: center; user-select: none; }
+        .theme-select { padding: 7px 10px; border: 1px solid ${isDarkOuter ? '#3a3a4a' : '#ccc'}; border-radius: 6px; font-size: 12px; background: ${toolbarBtnBg}; color: ${toolbarText}; cursor: pointer; outline: none; max-width: 150px; }
         .theme-select:hover { border-color: ${isDarkOuter ? '#5a5a6a' : '#999'}; }
-        #window-frame {
-            background: ${vt.codeBg};
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: ${config.transparentBackground ? 'none' : vt.shadow};
-            border: ${vt.border};
-            min-width: 400px;
-            max-width: 900px;
-        }
-        .title-bar {
-            background: ${vt.titleBarBg};
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            position: relative;
-            border-bottom: 1px solid rgba(128,128,128,0.1);
-        }
-        .traffic-lights { display: flex; gap: 8px; }
-        .traffic-light { width: 12px; height: 12px; border-radius: 50%; }
-        .traffic-light.red { background: #ff5f57; }
-        .traffic-light.yellow { background: #febc2e; }
-        .traffic-light.green { background: #28c840; }
-        .window-title {
-            position: absolute; left: 50%; transform: translateX(-50%);
-            color: ${titleTextColor}; font-size: 13px; font-weight: 500;
-            outline: none; cursor: text; padding: 2px 6px; border-radius: 4px;
-            transition: background 0.15s;
-        }
-        .window-title:focus { background: rgba(128,128,128,0.15); }
-        .code-container { padding: ${config.windowPadding}px; overflow-x: auto; }
-        .code-content {
-            font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; font-weight: 500;
-            line-height: 1.7; tab-size: 4; color: ${textColor};
-        }
-        .code-line { white-space: pre; min-height: 1.7em; }
-        .line-number {
-            display: inline-block; width: ${lineNumberWidth + 1}ch;
-            text-align: right; color: ${lineNumberColor};
-            margin-right: 16px; user-select: none; opacity: 0.5;
-        }
-        #status {
-            margin-top: 12px; font-size: 12px;
-            color: ${toolbarSubtext}; min-height: 18px;
-        }
+        #status { margin-top: 12px; font-size: 12px; color: ${toolbarSubtext}; min-height: 18px; }
+        canvas { display: block; border-radius: 12px; }
+        #empty-state { color: ${toolbarSubtext}; font-size: 14px; text-align: center; padding: 60px 20px; }
     </style>
 </head>
 <body>
@@ -853,122 +797,198 @@ function generateWebviewHtml(code: string, languageId: string, config: SnapshotC
             <span class="font-size-label" id="fontSizeLabel">${config.fontSize}px</span>
             <button class="font-btn" id="fontIncrease">+</button>
         </div>
-        <button class="btn btn-primary" id="saveBtn">Save as PNG</button>
-        <button class="btn btn-secondary" id="copyBtn">Copy to Clipboard</button>
+        <button class="btn btn-primary" id="saveBtn" disabled>Save as PNG</button>
+        <button class="btn btn-secondary" id="copyBtn" disabled>Copy to Clipboard</button>
     </div>
-    <div id="window-frame">
-        <div class="title-bar">
-            <div class="traffic-lights">
-                <div class="traffic-light red"></div>
-                <div class="traffic-light yellow"></div>
-                <div class="traffic-light green"></div>
-            </div>
-            <span class="window-title" contenteditable="true" id="windowTitle">${escapeHtml(fileName)}</span>
-        </div>
-        <div class="code-container">
-            <div class="code-content" id="codeContent">${codeHtml}</div>
-        </div>
-    </div>
+    <div id="empty-state">Select code in the editor to preview</div>
+    <canvas id="canvas" style="display:none"></canvas>
     <div id="status"></div>
 
     <script>
-        (function() {
-            var vscode = acquireVsCodeApi();
-            var frame = document.getElementById('window-frame');
-            var status = document.getElementById('status');
-            var saveBtn = document.getElementById('saveBtn');
-            var copyBtn = document.getElementById('copyBtn');
-            var codeContent = document.getElementById('codeContent');
-            var fontSizeLabel = document.getElementById('fontSizeLabel');
-            var themeSelect = document.getElementById('themeSelect');
-            var currentFontSize = ${config.fontSize};
+    (function() {
+        var vscode = acquireVsCodeApi();
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var status = document.getElementById('status');
+        var saveBtn = document.getElementById('saveBtn');
+        var copyBtn = document.getElementById('copyBtn');
+        var fontSizeLabel = document.getElementById('fontSizeLabel');
+        var themeSelect = document.getElementById('themeSelect');
+        var emptyState = document.getElementById('empty-state');
 
-            document.getElementById('fontDecrease').addEventListener('click', function() {
-                if (currentFontSize > 8) {
-                    currentFontSize -= 1;
-                    codeContent.style.fontSize = currentFontSize + 'px';
-                    fontSizeLabel.textContent = currentFontSize + 'px';
+        var currentFontSize = ${config.fontSize};
+        var currentCode = '';
+        var currentLanguage = '';
+        var currentFileName = 'code';
+        var scale = 2;
+
+        var THEME = ${JSON.stringify({
+            codeBg: vt.codeBg,
+            titleBarBg: vt.titleBarBg,
+            titleText: titleTextColor,
+            text: textColor,
+            lineNumber: lineNumberColor,
+            fontFamily: config.fontFamily,
+            windowPadding: config.windowPadding,
+            lineNumbers: config.lineNumbers,
+            trafficColors: ['#ff5f57', '#febc2e', '#28c840'],
+            tokenColors: mergedColors,
+        })};
+
+        var KEYWORDS = ${JSON.stringify(ALL_KEYWORDS)};
+
+        function tokenizeLine(line) {
+            var tokens = [];
+            var i = 0;
+            while (i < line.length) {
+                if (line[i] === '/' && i + 1 < line.length && line[i+1] === '/') {
+                    tokens.push({ text: line.substring(i), type: 'comment' });
+                    break;
                 }
-            });
-
-            document.getElementById('fontIncrease').addEventListener('click', function() {
-                if (currentFontSize < 32) {
-                    currentFontSize += 1;
-                    codeContent.style.fontSize = currentFontSize + 'px';
-                    fontSizeLabel.textContent = currentFontSize + 'px';
+                if (line[i] === '<' && line.substring(i, i+4) === '<!--') {
+                    var end = line.indexOf('-->', i+4);
+                    if (end !== -1) { tokens.push({ text: line.substring(i, end+3), type: 'comment' }); i = end+3; }
+                    else { tokens.push({ text: line.substring(i), type: 'comment' }); break; }
+                    continue;
                 }
-            });
+                if (line[i] === '#') { tokens.push({ text: line.substring(i), type: 'comment' }); break; }
+                if (line[i] === '"' || line[i] === "'" || line[i] === '\`') {
+                    var q = line[i]; var j = i+1;
+                    while (j < line.length && line[j] !== q) { if (line[j] === '\\\\') j++; j++; }
+                    tokens.push({ text: line.substring(i, j+1), type: 'string' }); i = j+1; continue;
+                }
+                if (/\\d/.test(line[i]) || (line[i] === '.' && i+1 < line.length && /\\d/.test(line[i+1]))) {
+                    var j = i; while (j < line.length && /[\\d._]/.test(line[j])) j++;
+                    tokens.push({ text: line.substring(i, j), type: 'number' }); i = j; continue;
+                }
+                if (/[a-zA-Z_$]/.test(line[i])) {
+                    var j = i; while (j < line.length && /[a-zA-Z0-9_$]/.test(line[j])) j++;
+                    var word = line.substring(i, j);
+                    var type = KEYWORDS[word] ? 'keyword' : 'plain';
+                    tokens.push({ text: word, type: type }); i = j; continue;
+                }
+                if (/[+\\-*/%=<>!&|^~?:]/.test(line[i])) {
+                    var j = i; while (j < line.length && /[+\\-*/%=<>!&|^~?:]/.test(line[j])) j++;
+                    tokens.push({ text: line.substring(i, j), type: 'operator' }); i = j; continue;
+                }
+                if (/[(){}\\[\\];,.]/.test(line[i])) {
+                    tokens.push({ text: line[i], type: 'delimiter' }); i++; continue;
+                }
+                tokens.push({ text: line[i], type: 'plain' }); i++;
+            }
+            return tokens;
+        }
 
-            themeSelect.addEventListener('change', function() {
-                var titleEl = document.getElementById('windowTitle');
-                var fileName = titleEl ? titleEl.textContent.trim() : '';
-                vscode.postMessage({ type: 'changeTheme', theme: themeSelect.value, fontSize: currentFontSize, fileName: fileName });
-            });
+        function render() {
+            if (!currentCode) return;
+            var lines = currentCode.split('\\n');
+            var tokenLines = lines.map(function(l) { return tokenizeLine(l); });
+            var lineH = currentFontSize * 1.7;
+            var titleH = 44;
+            var codeH = lines.length * lineH + THEME.windowPadding * 2;
+            var totalH = titleH + codeH;
+            var w = 800;
+            var maxLen = 0;
+            for (var i = 0; i < tokenLines.length; i++) {
+                var lineText = '';
+                for (var j = 0; j < tokenLines[i].length; j++) lineText += tokenLines[i][j].text;
+                if (lineText.length > maxLen) maxLen = lineText.length;
+            }
+            if (maxLen * currentFontSize * 0.6 + 80 > w) w = Math.min(maxLen * currentFontSize * 0.6 + 80, 1200);
 
-            function waitForHtml2Canvas(maxWait) {
-                return new Promise(function(resolve) {
-                    if (typeof html2canvas !== 'undefined') { resolve(true); return; }
-                    var start = Date.now();
-                    var check = setInterval(function() {
-                        if (typeof html2canvas !== 'undefined' || Date.now() - start > maxWait) {
-                            clearInterval(check);
-                            resolve(typeof html2canvas !== 'undefined');
-                        }
-                    }, 100);
-                });
+            canvas.width = w * scale;
+            canvas.height = totalH * scale;
+            canvas.style.width = w + 'px';
+            canvas.style.height = totalH + 'px';
+            ctx.scale(scale, scale);
+
+            ctx.fillStyle = THEME.codeBg;
+            ctx.fillRect(0, 0, w, totalH);
+
+            ctx.fillStyle = THEME.titleBarBg;
+            ctx.fillRect(0, 0, w, titleH);
+
+            for (var i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.arc(20 + i * 22, titleH / 2, 6, 0, Math.PI * 2);
+                ctx.fillStyle = THEME.trafficColors[i];
+                ctx.fill();
             }
 
-            function captureFrame() {
-                return waitForHtml2Canvas(10000).then(function(loaded) {
-                    if (!loaded) { throw new Error('html2canvas failed to load. Check your internet connection.'); }
-                    return html2canvas(frame, { backgroundColor: null, scale: 2, useCORS: true, logging: false });
-                });
-            }
+            ctx.fillStyle = THEME.titleText;
+            ctx.font = '500 13px -apple-system, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(currentFileName, w / 2, titleH / 2);
+            ctx.textAlign = 'left';
 
-            function toBase64(canvas) { return canvas.toDataURL('image/png').split(',')[1]; }
+            ctx.font = currentFontSize + 'px ' + THEME.fontFamily;
+            ctx.textBaseline = 'top';
+            var y = titleH + THEME.windowPadding;
+            var lineNumW = String(lines.length).length;
 
-            saveBtn.addEventListener('click', function() {
-                status.textContent = 'Generating image...';
-                saveBtn.disabled = true; copyBtn.disabled = true;
-                captureFrame().then(function(canvas) {
-                    vscode.postMessage({ type: 'save', data: toBase64(canvas) });
-                }).catch(function(err) {
-                    status.textContent = 'Error: ' + err.message;
-                    saveBtn.disabled = false; copyBtn.disabled = false;
-                });
-            });
-
-            copyBtn.addEventListener('click', function() {
-                status.textContent = 'Generating image...';
-                saveBtn.disabled = true; copyBtn.disabled = true;
-                captureFrame().then(function(canvas) {
-                    return new Promise(function(resolve) {
-                        canvas.toBlob(function(blob) {
-                            var reader = new FileReader();
-                            reader.onloadend = function() { resolve(reader.result.split(',')[1]); };
-                            reader.readAsDataURL(blob);
-                        }, 'image/png');
-                    });
-                }).then(function(base64) {
-                    vscode.postMessage({ type: 'copy', data: base64 });
-                }).catch(function(err) {
-                    status.textContent = 'Error: ' + err.message;
-                    saveBtn.disabled = false; copyBtn.disabled = false;
-                });
-            });
-
-            window.addEventListener('message', function(event) {
-                var msg = event.data;
-                if (msg.type === 'done') {
-                    status.textContent = msg.message || '';
-                    saveBtn.disabled = false; copyBtn.disabled = false;
-                } else if (msg.type === 'themeChanged') {
-                    location.reload();
+            for (var li = 0; li < lines.length; li++) {
+                var x = THEME.windowPadding;
+                if (THEME.lineNumbers) {
+                    ctx.fillStyle = THEME.lineNumber;
+                    ctx.globalAlpha = 0.5;
+                    ctx.fillText(String(li + 1).padStart(lineNumW, ' '), x, y);
+                    ctx.globalAlpha = 1;
+                    x += (lineNumW + 2) * currentFontSize * 0.6 + 16;
                 }
-            });
-        })();
+                var toks = tokenLines[li] || [];
+                for (var ti = 0; ti < toks.length; ti++) {
+                    ctx.fillStyle = THEME.tokenColors[toks[ti].type] || THEME.tokenColors['plain'] || '#D4D4D4';
+                    ctx.fillText(toks[ti].text, x, y);
+                    x += ctx.measureText(toks[ti].text).width;
+                }
+                y += lineH;
+            }
+        }
+
+        window.addEventListener('message', function(event) {
+            var msg = event.data;
+            if (msg.type === 'updateCode') {
+                currentCode = msg.code || '';
+                currentLanguage = msg.language || '';
+                currentFileName = msg.fileName || 'code';
+                if (currentCode) {
+                    emptyState.style.display = 'none';
+                    canvas.style.display = 'block';
+                    saveBtn.disabled = false;
+                    copyBtn.disabled = false;
+                    render();
+                } else {
+                    emptyState.style.display = 'block';
+                    canvas.style.display = 'none';
+                    saveBtn.disabled = true;
+                    copyBtn.disabled = true;
+                }
+            } else if (msg.type === 'done') {
+                status.textContent = msg.message || '';
+                saveBtn.disabled = false; copyBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('fontDecrease').addEventListener('click', function() {
+            if (currentFontSize > 8) { currentFontSize -= 1; fontSizeLabel.textContent = currentFontSize + 'px'; render(); }
+        });
+        document.getElementById('fontIncrease').addEventListener('click', function() {
+            if (currentFontSize < 32) { currentFontSize += 1; fontSizeLabel.textContent = currentFontSize + 'px'; render(); }
+        });
+        themeSelect.addEventListener('change', function() {
+            vscode.postMessage({ type: 'changeTheme', theme: themeSelect.value, fontSize: currentFontSize });
+        });
+        saveBtn.addEventListener('click', function() {
+            status.textContent = 'Saving...'; saveBtn.disabled = true; copyBtn.disabled = true;
+            vscode.postMessage({ type: 'save', data: canvas.toDataURL('image/png').split(',')[1] });
+        });
+        copyBtn.addEventListener('click', function() {
+            status.textContent = 'Copying...'; saveBtn.disabled = true; copyBtn.disabled = true;
+            vscode.postMessage({ type: 'copy', data: canvas.toDataURL('image/png').split(',')[1] });
+        });
+    })();
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
 </html>`;
 }
@@ -994,6 +1014,8 @@ async function captureCode(): Promise<{ code: string; languageId: string; fileNa
         vscode.window.showWarningMessage('No code to capture.');
         return undefined;
     }
+
+    const lines = code.split('\n');
 
     return {
         code,
@@ -1053,16 +1075,17 @@ async function copyImageToClipboard(base64Data: string): Promise<void> {
 
 export function activate(context: vscode.ExtensionContext) {
     const takeSnapshot = vscode.commands.registerCommand('codeimage.takeSnapshot', async () => {
-        const captured = await captureCode();
-        if (!captured) { return; }
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showWarningMessage('No active editor found.');
+            return;
+        }
 
         const config = getConfig();
-        const tokenColors = getTokenColors();
-
         const panel = vscode.window.createWebviewPanel(
             'codeimage',
             'codeimage',
-            vscode.ViewColumn.Active,
+            vscode.ViewColumn.Beside,
             {
                 enableScripts: true,
                 retainContextWhenHidden: true,
@@ -1074,9 +1097,30 @@ export function activate(context: vscode.ExtensionContext) {
             dark: vscode.Uri.file(path.join(context.extensionPath, 'resources', 'snapshot-dark.svg')),
         };
 
-        panel.webview.html = generateWebviewHtml(captured.code, captured.languageId, config, tokenColors);
+        panel.webview.html = generateLiveWebviewHtml(config);
 
-        panel.webview.onDidReceiveMessage(async (message: { type: string; data?: string; theme?: string; fontSize?: number; fileName?: string }) => {
+        let lastCode = '';
+        let lastLanguage = '';
+        let lastFileName = 'code';
+
+        function sendCodeUpdate() {
+            const ed = vscode.window.activeTextEditor;
+            if (!ed || !panel.visible) { return; }
+            const sel = ed.selection;
+            let code = '';
+            if (sel && !sel.isEmpty) {
+                code = ed.document.getText(sel);
+            }
+            lastCode = code;
+            lastLanguage = ed.document.languageId;
+            lastFileName = path.basename(ed.document.fileName);
+            panel.webview.postMessage({ type: 'updateCode', code, language: lastLanguage, fileName: lastFileName });
+        }
+
+        const selectionDisposable = vscode.window.onDidChangeTextEditorSelection(() => { sendCodeUpdate(); });
+        const visibleDisposable = panel.onDidChangeViewState(() => { if (panel.visible) { sendCodeUpdate(); } });
+
+        panel.webview.onDidReceiveMessage(async (message: { type: string; data?: string; theme?: string; fontSize?: number }) => {
             if (message.type === 'save' && message.data) {
                 await saveImageToFile(message.data);
                 panel.webview.postMessage({ type: 'done', message: 'Image saved!' });
@@ -1087,20 +1131,50 @@ export function activate(context: vscode.ExtensionContext) {
                 await vscode.workspace.getConfiguration('codeimage').update('visualTheme', message.theme, vscode.ConfigurationTarget.Global);
                 const newConfig = getConfig();
                 if (message.fontSize) { newConfig.fontSize = message.fontSize; }
-                const newTokenColors = getTokenColors();
-                const code = message.fileName ? captured.code : captured.code;
-                panel.webview.html = generateWebviewHtml(code, captured.languageId, newConfig, newTokenColors);
+                panel.webview.html = generateLiveWebviewHtml(newConfig);
+                const savedCode = lastCode;
+                const savedLang = lastLanguage;
+                const savedFile = lastFileName;
+                const retrySend = (attempts: number) => {
+                    if (attempts <= 0) { return; }
+                    setTimeout(() => {
+                        if (panel.visible) {
+                            panel.webview.postMessage({ type: 'updateCode', code: savedCode, language: savedLang, fileName: savedFile });
+                        } else {
+                            retrySend(attempts - 1);
+                        }
+                    }, 300);
+                };
+                retrySend(5);
             }
         });
+
+        panel.onDidDispose(() => {
+            selectionDisposable.dispose();
+            visibleDisposable.dispose();
+        });
+
+        sendCodeUpdate();
     });
 
     const copyToClipboard = vscode.commands.registerCommand('codeimage.copyToClipboard', async () => {
-        const captured = await captureCode();
-        if (!captured) { return; }
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showWarningMessage('No active editor found.');
+            return;
+        }
+
+        const sel = editor.selection;
+        let code = '';
+        if (sel && !sel.isEmpty) {
+            code = editor.document.getText(sel);
+        }
+        if (!code.trim()) {
+            vscode.window.showWarningMessage('Select code first.');
+            return;
+        }
 
         const config = getConfig();
-        const tokenColors = getTokenColors();
-
         const panel = vscode.window.createWebviewPanel(
             'codeimage-quick',
             'codeimage',
@@ -1116,16 +1190,23 @@ export function activate(context: vscode.ExtensionContext) {
             dark: vscode.Uri.file(path.join(context.extensionPath, 'resources', 'snapshot-dark.svg')),
         };
 
-        panel.webview.html = generateWebviewHtml(captured.code, captured.languageId, config, tokenColors);
+        panel.webview.html = generateLiveWebviewHtml(config);
+        const fileName = path.basename(editor.document.fileName);
+        const languageId = editor.document.languageId;
+        setTimeout(() => {
+            panel.webview.postMessage({ type: 'updateCode', code, language: languageId, fileName });
+        }, 200);
 
         let handled = false;
-        const disposable = panel.webview.onDidReceiveMessage(async (message: { type: string; data?: string; theme?: string; fontSize?: number; fileName?: string }) => {
+        const disposable = panel.webview.onDidReceiveMessage(async (message: { type: string; data?: string; theme?: string; fontSize?: number }) => {
             if (message.type === 'changeTheme' && message.theme) {
                 await vscode.workspace.getConfiguration('codeimage').update('visualTheme', message.theme, vscode.ConfigurationTarget.Global);
                 const newConfig = getConfig();
                 if (message.fontSize) { newConfig.fontSize = message.fontSize; }
-                const newTokenColors = getTokenColors();
-                panel.webview.html = generateWebviewHtml(captured.code, captured.languageId, newConfig, newTokenColors);
+                panel.webview.html = generateLiveWebviewHtml(newConfig);
+                setTimeout(() => {
+                    panel.webview.postMessage({ type: 'updateCode', code, language: languageId, fileName });
+                }, 200);
                 return;
             }
             if (handled) { return; }

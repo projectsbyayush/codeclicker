@@ -2,7 +2,7 @@
   "name": "codeimage",
   "displayName": "codeimage",
   "description": "Generate beautiful code screenshots with macOS terminal styling. Export as PNG or copy to clipboard.",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "publisher": "AyushPatil",
   "author": {
     "name": "Ayush Patil"
