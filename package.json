@@ -2,7 +2,7 @@
   "name": "codeclicker",
   "displayName": "codeclicker",
   "description": "Generate beautiful code screenshots with macOS terminal styling. Export as PNG or copy to clipboard.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "AyushPatil",
   "author": {
     "name": "Ayush Patil"
