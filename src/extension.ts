@@ -161,7 +161,7 @@ interface SnapshotConfig {
 }
 
 function getConfig(): SnapshotConfig {
-    const cfg = vscode.workspace.getConfiguration('codeclick');
+    const cfg = vscode.workspace.getConfiguration('codeclicker');
     return {
         fontSize: cfg.get<number>('fontSize', 12),
         fontFamily: cfg.get<string>('fontFamily', '"JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, monospace'),
@@ -759,7 +759,7 @@ function generateLiveWebviewHtml(config: SnapshotConfig): string {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
-    <title>codeclick</title>
+    <title>codeclicker</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -1063,7 +1063,7 @@ async function saveImageToFile(base64Data: string): Promise<void> {
 
 async function copyImageToClipboard(base64Data: string): Promise<void> {
     const tempDir = os.tmpdir();
-    const tempFile = path.join(tempDir, `codeclick-${Date.now()}.png`);
+    const tempFile = path.join(tempDir, `codeclicker-${Date.now()}.png`);
     const buffer = Buffer.from(base64Data, 'base64');
     fs.writeFileSync(tempFile, buffer);
 
@@ -1074,7 +1074,7 @@ async function copyImageToClipboard(base64Data: string): Promise<void> {
             vscode.window.showInformationMessage('Code snapshot copied to clipboard!');
         } else if (platform === 'win32') {
             const psScript = `Add-Type -AssemblyName System.Windows.Forms; $img = [System.Drawing.Image]::FromFile('${tempFile}'); [System.Windows.Forms.Clipboard]::SetImage($img); $img.Dispose()`;
-            const psFile = path.join(tempDir, `codeclick-ps-${Date.now()}.ps1`);
+            const psFile = path.join(tempDir, `codeclicker-ps-${Date.now()}.ps1`);
             fs.writeFileSync(psFile, psScript, 'utf-8');
             try {
                 execSync(`powershell -ExecutionPolicy Bypass -File "${psFile}"`, { timeout: 15000 });
@@ -1094,7 +1094,7 @@ async function copyImageToClipboard(base64Data: string): Promise<void> {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    const takeSnapshot = vscode.commands.registerCommand('codeclick.takeSnapshot', async () => {
+    const takeSnapshot = vscode.commands.registerCommand('codeclicker.takeSnapshot', async () => {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
             vscode.window.showWarningMessage('No active editor found.');
@@ -1103,8 +1103,8 @@ export function activate(context: vscode.ExtensionContext) {
 
         const config = getConfig();
         const panel = vscode.window.createWebviewPanel(
-            'codeclick',
-            'codeclick',
+            'codeclicker',
+            'codeclicker',
             vscode.ViewColumn.Beside,
             {
                 enableScripts: true,
@@ -1156,7 +1156,7 @@ export function activate(context: vscode.ExtensionContext) {
                 await copyImageToClipboard(message.data);
                 panel.webview.postMessage({ type: 'done', message: 'Copied to clipboard!' });
             } else if (message.type === 'changeTheme' && message.theme) {
-                await vscode.workspace.getConfiguration('codeclick').update('visualTheme', message.theme, vscode.ConfigurationTarget.Global);
+                await vscode.workspace.getConfiguration('codeclicker').update('visualTheme', message.theme, vscode.ConfigurationTarget.Global);
                 const newConfig = getConfig();
                 if (message.fontSize) { newConfig.fontSize = message.fontSize; }
                 panel.webview.html = generateLiveWebviewHtml(newConfig);
@@ -1185,7 +1185,7 @@ export function activate(context: vscode.ExtensionContext) {
         sendCodeUpdate();
     });
 
-    const copyToClipboard = vscode.commands.registerCommand('codeclick.copyToClipboard', async () => {
+    const copyToClipboard = vscode.commands.registerCommand('codeclicker.copyToClipboard', async () => {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
             vscode.window.showWarningMessage('No active editor found.');
@@ -1204,8 +1204,8 @@ export function activate(context: vscode.ExtensionContext) {
 
         const config = getConfig();
         const panel = vscode.window.createWebviewPanel(
-            'codeclick-quick',
-            'codeclick',
+            'codeclicker-quick',
+            'codeclicker',
             vscode.ViewColumn.Active,
             {
                 enableScripts: true,
@@ -1228,7 +1228,7 @@ export function activate(context: vscode.ExtensionContext) {
         let handled = false;
         const disposable = panel.webview.onDidReceiveMessage(async (message: { type: string; data?: string; theme?: string; fontSize?: number }) => {
             if (message.type === 'changeTheme' && message.theme) {
-                await vscode.workspace.getConfiguration('codeclick').update('visualTheme', message.theme, vscode.ConfigurationTarget.Global);
+                await vscode.workspace.getConfiguration('codeclicker').update('visualTheme', message.theme, vscode.ConfigurationTarget.Global);
                 const newConfig = getConfig();
                 if (message.fontSize) { newConfig.fontSize = message.fontSize; }
                 panel.webview.html = generateLiveWebviewHtml(newConfig);
