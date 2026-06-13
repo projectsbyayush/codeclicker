@@ -1,0 +1,164 @@
+{
+  "name": "codeimage",
+  "displayName": "codeimage",
+  "description": "Generate beautiful code screenshots with macOS terminal styling. Export as PNG or copy to clipboard.",
+  "version": "0.2.0",
+  "publisher": "AyushPatil",
+  "author": {
+    "name": "Ayush Patil"
+  },
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other",
+    "Snippets",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "code screenshot",
+    "code image",
+    "code snap",
+    "terminal",
+    "macOS",
+    "png",
+    "clipboard",
+    "code snippet",
+    "code capture",
+    "syntax highlighting",
+    "theme",
+    "dark mode",
+    "light mode",
+    "solarized",
+    "hacker",
+    "developer tools",
+    "code sharing"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "icon": "resources/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/projectsbyayush/codeimage"
+  },
+  "bugs": {
+    "url": "https://github.com/projectsbyayush/codeimage/issues"
+  },
+  "homepage": "https://github.com/projectsbyayush/codeimage#readme",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codeimage.takeSnapshot",
+        "title": "Take Code Snapshot",
+        "icon": {
+          "light": "./resources/snapshot-light.svg",
+          "dark": "./resources/snapshot-dark.svg"
+        }
+      },
+      {
+        "command": "codeimage.copyToClipboard",
+        "title": "Copy Code Snapshot to Clipboard"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "codeimage.takeSnapshot",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "when": "editorHasSelection",
+          "command": "codeimage.copyToClipboard",
+          "group": "9_cutcopypaste"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "CodeImage",
+      "properties": {
+        "codeimage.fontSize": {
+          "type": "number",
+          "default": 12,
+          "description": "Font size for the code in the snapshot"
+        },
+        "codeimage.fontFamily": {
+          "type": "string",
+          "default": "\"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", Consolas, monospace",
+          "description": "Font family for the code in the snapshot"
+        },
+        "codeimage.lineNumbers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show line numbers in the snapshot"
+        },
+        "codeimage.windowPadding": {
+          "type": "number",
+          "default": 32,
+          "description": "Padding around the code block inside the window"
+        },
+        "codeimage.background": {
+          "type": "string",
+          "default": "#1e1e2e",
+          "description": "Background color of the code window"
+        },
+        "codeimage.titleBarColor": {
+          "type": "string",
+          "default": "#2d2d3f",
+          "description": "Background color of the title bar"
+        },
+        "codeimage.theme": {
+          "type": "string",
+          "default": "dark",
+          "enum": [
+            "dark",
+            "light"
+          ],
+          "description": "Color theme for the snapshot"
+        },
+        "codeimage.transparentBackground": {
+          "type": "boolean",
+          "default": false,
+          "description": "Make the outer background transparent"
+        },
+        "codeimage.visualTheme": {
+          "type": "string",
+          "default": "classic-dark",
+          "enum": [
+            "classic-dark",
+            "crisp-light",
+            "solarized-dark",
+            "solarized-light",
+            "hacker-green"
+          ],
+          "enumDescriptions": [
+            "Timeless dark theme with excellent contrast",
+            "Clean modern light theme for well-lit environments",
+            "Meticulously crafted dark Solarized palette",
+            "Light Solarized palette for comfortable viewing",
+            "Retro green-on-black terminal aesthetic"
+          ],
+          "description": "Visual theme for the output image"
+        },
+        "codeimage.outerPadding": {
+          "type": "number",
+          "default": 48,
+          "description": "Padding around the window frame"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.0",
+    "@types/vscode": "^1.74.0",
+    "typescript": "^5.3.0"
+  }
+}
