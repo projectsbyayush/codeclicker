@@ -786,7 +786,7 @@ function generateLiveWebviewHtml(config: SnapshotConfig): string {
         .theme-select:hover { border-color: ${isDarkOuter ? '#5a5a6a' : '#999'}; }
         #status { margin-top: 12px; font-size: 12px; color: ${toolbarSubtext}; min-height: 18px; }
         canvas { display: block; border-radius: 12px; }
-        #empty-state { color: ${toolbarSubtext}; font-size: 14px; text-align: center; padding: 60px 20px; }
+        #empty-state { color: ${isDarkOuter ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)'}; font-size: 16px; text-align: center; padding: 80px 20px; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -800,7 +800,7 @@ function generateLiveWebviewHtml(config: SnapshotConfig): string {
         <button class="btn btn-primary" id="saveBtn" disabled>Save as PNG</button>
         <button class="btn btn-secondary" id="copyBtn" disabled>Copy to Clipboard</button>
     </div>
-    <div id="empty-state">Select code in the editor to preview</div>
+    <div id="empty-state"><span style="color:${isDarkOuter ? '#4ADE80' : '#16a34a'};font-weight:bold">❯</span> Select code in the editor to preview</div>
     <canvas id="canvas" style="display:none"></canvas>
     <div id="status"></div>
 
