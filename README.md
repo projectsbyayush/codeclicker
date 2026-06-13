@@ -1,32 +1,14 @@
-<h1 align="center">codeimage</h1>
+# codeimage
 
-<p align="center">
-  <strong>Generate beautiful code screenshots with macOS terminal styling for VS Code</strong>
-</p>
-
-<p align="center">
-  <a href="https://github.com/projectsbyayush/codeimage">
-    <img src="https://img.shields.io/github/stars/projectsbyayush/codeimage?style=social" alt="GitHub stars">
-  </a>
-  <a href="https://github.com/projectsbyayush/codeimage">
-    <img src="https://img.shields.io/github/forks/projectsbyayush/codeimage?style=social" alt="GitHub forks">
-  </a>
-  <a href="https://github.com/projectsbyayush/codeimage/issues">
-    <img src="https://img.shields.io/github/issues/projectsbyayush/codeimage" alt="GitHub issues">
-  </a>
-  <a href="https://github.com/projectsbyayush/codeimage/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/projectsbyayush/codeimage" alt="License">
-  </a>
-</p>
-
----
+Generate beautiful code screenshots with macOS terminal styling for VS Code.
 
 Turn your code into stunning, shareable images directly from Visual Studio Code. Perfect for social media, documentation, presentations, and code sharing.
 
-Resources
-GitHub: https://github.com/projectsbyayush/codeimage
-Report Issues: https://github.com/projectsbyayush/codeimage/issues
-License: MIT
+**Resources**
+
+- GitHub: https://github.com/projectsbyayush/codeimage
+- Report Issues: https://github.com/projectsbyayush/codeimage/issues
+- License: MIT
 
 ## Features
 
