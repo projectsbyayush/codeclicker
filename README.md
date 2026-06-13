@@ -23,9 +23,10 @@
 
 Turn your code into stunning, shareable images directly from Visual Studio Code. Perfect for social media, documentation, presentations, and code sharing.
 
-## Why CodeImage?
-
-CodeImage is a **VS Code extension** that generates **beautiful code screenshots** with a **macOS terminal look**. Unlike other screenshot tools, CodeImage runs entirely inside your editor — no external apps, no browser tabs, just one click.
+Resources
+GitHub: https://github.com/projectsbyayush/codeimage
+Report Issues: https://github.com/projectsbyayush/codeimage/issues
+License: MIT
 
 ## Features
 
@@ -44,9 +45,25 @@ CodeImage is a **VS Code extension** that generates **beautiful code screenshots
 
 1. Install the extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=AyushPatil.codeimage)
 2. Open any code file in VS Code
-3. Click the **camera icon** in the editor title bar
+3. Click the **camera icon** in the editor title bar (top-right)
 4. Choose your theme from the dropdown
 5. Click **Save as PNG** or **Copy to Clipboard**
+
+## How It Works
+
+1. Click the camera icon or press `Ctrl+Shift+P` and type "Take Code Snapshot"
+2. Webview panel opens with your code in a macOS terminal frame
+3. Select a theme from the dropdown to change colors
+4. Edit the filename by clicking on it in the title bar
+5. Use +/- buttons to adjust font size
+6. Save as PNG or copy to clipboard
+
+## Commands
+
+| Command | Description | Shortcut |
+|---------|-------------|----------|
+| Take Code Snapshot | Open the code image generator panel | Click camera icon |
+| Copy Code Snapshot to Clipboard | Quick copy without the panel | Right-click menu |
 
 ## Themes
 
@@ -62,34 +79,44 @@ CodeImage is a **VS Code extension** that generates **beautiful code screenshots
 
 CodeImage provides syntax highlighting for:
 
-- **Web**: JavaScript, TypeScript, JSX, TSX, HTML, CSS, SCSS, Vue
+- **Web**: HTML, CSS, SCSS, LESS, JavaScript, TypeScript, JSX, TSX, Vue
 - **Systems**: C, C++, Rust, Go, Java, Kotlin, Swift, Objective-C
 - **Scripting**: Python, Ruby, PHP, Lua, Perl, Shell/Bash, PowerShell
 - **Data**: JSON, YAML, Dockerfile, SQL
 - **And more**: Assembly, Lisp, Clojure, Haskell, MATLAB, LaTeX, R
 
-## Settings
+## Configuration
 
-Configure CodeImage in VS Code Settings (`Ctrl+,`):
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `codeimage.fontSize` | `12` | Font size for the code in the snapshot |
+| `codeimage.fontFamily` | `"JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, monospace` | Font family for the code |
+| `codeimage.lineNumbers` | `true` | Show line numbers in the snapshot |
+| `codeimage.windowPadding` | `32` | Padding around the code block inside the window |
+| `codeimage.outerPadding` | `48` | Padding around the window frame |
+| `codeimage.visualTheme` | `"classic-dark"` | Visual theme for the output image |
+| `codeimage.transparentBackground` | `false` | Make the outer background transparent |
 
-```json
-{
-  "codeimage.fontSize": 12,
-  "codeimage.fontFamily": "\"JetBrains Mono\", \"Cascadia Code\", \"Fira Code\", Consolas, monospace",
-  "codeimage.lineNumbers": true,
-  "codeimage.windowPadding": 32,
-  "codeimage.outerPadding": 48,
-  "codeimage.visualTheme": "classic-dark",
-  "codeimage.transparentBackground": false
-}
-```
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+Shift+P` → "Take Code Snapshot" | Open code image panel |
+| `Ctrl+Shift+P` → "Copy Code Snapshot to Clipboard" | Quick copy to clipboard |
 
 ## Installation
+
+### From VS Code Marketplace
+
+1. Open VS Code
+2. Go to Extensions (`Ctrl+Shift+X`)
+3. Search for "codeimage"
+4. Click **Install**
 
 ### From VSIX
 
 ```bash
-code --install-extension codeimage-0.2.0.vsix
+code --install-extension AyushPatil.codeimage-0.2.0.vsix
 ```
 
 ### From Source
@@ -101,46 +128,18 @@ npm install
 npm run compile
 ```
 
-## Keyboard Shortcuts
-
-Open the Command Palette (`Ctrl+Shift+P`) and type:
-
-- `Take Code Snapshot`
-- `Copy Code Snapshot to Clipboard`
-
-## Tips
-
-- **Select code first** to capture only a portion
-- **Edit the title** by clicking on the filename in the terminal window
-- **Switch themes** using the dropdown to preview different styles
-- **Adjust font size** with the +/- buttons for optimal readability
-
 ## Requirements
 
-- Visual Studio Code 1.74.0 or higher
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit issues and pull requests.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- VS Code 1.74.0 or higher
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - Copyright (c) 2025 Ayush Patil.
 
----
+## Contributing
 
-<p align="center">
-  <strong>Enjoying CodeImage?</strong> Leave a review on the <a href="https://marketplace.visualstudio.com/items?itemName=AyushPatil.codeimage">VS Code Marketplace</a>!
-</p>
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-<p align="center">
-  <a href="https://github.com/projectsbyayush/codeimage">
-    <img src="https://github.com/projectsbyayush/codeimage/raw/main/resources/icon.png" alt="CodeImage Logo" width="128">
-  </a>
-</p>
+## Support
+
+If you find this extension helpful, please rate it on the VS Code Marketplace.
