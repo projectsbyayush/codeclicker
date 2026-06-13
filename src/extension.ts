@@ -785,7 +785,7 @@ function generateLiveWebviewHtml(config: SnapshotConfig): string {
         .theme-select { padding: 7px 10px; border: 1px solid ${isDarkOuter ? '#3a3a4a' : '#ccc'}; border-radius: 6px; font-size: 12px; background: ${toolbarBtnBg}; color: ${toolbarText}; cursor: pointer; outline: none; max-width: 150px; }
         .theme-select:hover { border-color: ${isDarkOuter ? '#5a5a6a' : '#999'}; }
         #status { margin-top: 12px; font-size: 12px; color: ${toolbarSubtext}; min-height: 18px; }
-        canvas { display: block; }
+        canvas { display: block; border-radius: 12px; }
         #empty-state { color: ${isDarkOuter ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)'}; font-size: 16px; text-align: center; padding: 80px 20px; letter-spacing: 0.5px; }
     </style>
 </head>
@@ -901,6 +901,20 @@ function generateLiveWebviewHtml(config: SnapshotConfig): string {
             canvas.style.width = w + 'px';
             canvas.style.height = totalH + 'px';
             ctx.scale(scale, scale);
+
+            var r = 12;
+            ctx.beginPath();
+            ctx.moveTo(r, 0);
+            ctx.lineTo(w - r, 0);
+            ctx.quadraticCurveTo(w, 0, w, r);
+            ctx.lineTo(w, totalH - r);
+            ctx.quadraticCurveTo(w, totalH, w - r, totalH);
+            ctx.lineTo(r, totalH);
+            ctx.quadraticCurveTo(0, totalH, 0, totalH - r);
+            ctx.lineTo(0, r);
+            ctx.quadraticCurveTo(0, 0, r, 0);
+            ctx.closePath();
+            ctx.clip();
 
             ctx.fillStyle = THEME.codeBg;
             ctx.fillRect(0, 0, w, totalH);
