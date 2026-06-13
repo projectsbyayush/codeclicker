@@ -43,6 +43,9 @@ const VISUAL_THEMES: Record<string, VisualTheme> = {
             'attribute-value': '#98C379', 'decorator': '#C678DD', 'class': '#E5C07B',
             'interface': '#E5C07B', 'enum': '#E5C07B', 'namespace': '#E5C07B',
             'regex': '#98C379', 'plain': '#ABB2BF',
+            'tag-layout': '#4EC9B0', 'tag-text': '#569CD6', 'tag-form': '#CE9178',
+            'tag-media': '#D19A66', 'tag-table': '#C586C0', 'tag-list': '#DCDCAA',
+            'tag-head': '#569CD6', 'tag-deprecated': '#5A5A5A', 'tag-link': '#61AFEF',
         },
     },
     'crisp-light': {
@@ -68,6 +71,9 @@ const VISUAL_THEMES: Record<string, VisualTheme> = {
             'attribute-value': '#008000', 'decorator': '#A000A0', 'class': '#000000',
             'interface': '#000000', 'enum': '#000000', 'namespace': '#000000',
             'regex': '#008000', 'plain': '#333333',
+            'tag-layout': '#008000', 'tag-text': '#0000FF', 'tag-form': '#800000',
+            'tag-media': '#E36209', 'tag-table': '#6F42C1', 'tag-list': '#795E26',
+            'tag-head': '#0000FF', 'tag-deprecated': '#AAAAAA', 'tag-link': '#0000FF',
         },
     },
     'solarized-dark': {
@@ -93,6 +99,9 @@ const VISUAL_THEMES: Record<string, VisualTheme> = {
             'attribute-value': '#2AA198', 'decorator': '#CB4B16', 'class': '#B58900',
             'interface': '#268BD2', 'enum': '#B58900', 'namespace': '#268BD2',
             'regex': '#2AA198', 'plain': '#839496',
+            'tag-layout': '#2AA198', 'tag-text': '#268BD2', 'tag-form': '#CB4B16',
+            'tag-media': '#B58900', 'tag-table': '#6C71C4', 'tag-list': '#859900',
+            'tag-head': '#268BD2', 'tag-deprecated': '#586E75', 'tag-link': '#2AA198',
         },
     },
     'solarized-light': {
@@ -118,6 +127,9 @@ const VISUAL_THEMES: Record<string, VisualTheme> = {
             'attribute-value': '#2AA198', 'decorator': '#CB4B16', 'class': '#B58900',
             'interface': '#268BD2', 'enum': '#B58900', 'namespace': '#268BD2',
             'regex': '#2AA198', 'plain': '#586E75',
+            'tag-layout': '#2AA198', 'tag-text': '#268BD2', 'tag-form': '#CB4B16',
+            'tag-media': '#B58900', 'tag-table': '#6C71C4', 'tag-list': '#859900',
+            'tag-head': '#268BD2', 'tag-deprecated': '#93A1A1', 'tag-link': '#2AA198',
         },
     },
     'hacker-green': {
@@ -143,6 +155,9 @@ const VISUAL_THEMES: Record<string, VisualTheme> = {
             'attribute-value': '#86EFAC', 'decorator': '#22C55E', 'class': '#6EE7B7',
             'interface': '#6EE7B7', 'enum': '#6EE7B7', 'namespace': '#6EE7B7',
             'regex': '#86EFAC', 'plain': '#39D353',
+            'tag-layout': '#34D399', 'tag-text': '#4ADE80', 'tag-form': '#22C55E',
+            'tag-media': '#86EFAC', 'tag-table': '#6EE7B7', 'tag-list': '#A7F3D0',
+            'tag-head': '#4ADE80', 'tag-deprecated': '#1A6B2A', 'tag-link': '#34D399',
         },
     },
 };
@@ -434,7 +449,7 @@ const _jsKw = [
     'package', 'private', 'protected', 'public', 'return', 'short',
     'static', 'super', 'switch', 'synchronized', 'this', 'throw',
     'throws', 'transient', 'true', 'try', 'typeof', 'undefined', 'var',
-    'void', 'volatile', 'while', 'with', 'yield',
+    'void', 'volatile', 'while', 'yield',
 ];
 const _pyKw = [
     'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue',
@@ -466,8 +481,8 @@ function tokenizeCode(code: string, languageId: string): Token[] {
     const pyKeywords = new Set([
         'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue',
         'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from',
-        'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not',
-        'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield',
+        'global', 'if', 'import', 'in', 'lambda', 'nonlocal', 'not',
+        'or', 'pass', 'raise', 'return', 'try', 'while', 'yield',
     ]);
 
     const goKeywords = new Set([
@@ -837,6 +852,18 @@ function generateLiveWebviewHtml(config: SnapshotConfig): string {
 
         var KEYWORDS = ${JSON.stringify(ALL_KEYWORDS)};
 
+        var TAG_CATS = {};
+        var _tl = 'tag-layout', _tt = 'tag-text', _tf = 'tag-form', _tm = 'tag-media', _ta = 'tag-table', _tl2 = 'tag-list', _th = 'tag-head', _td = 'tag-deprecated', _tk = 'tag-link';
+        ['div','section','article','header','footer','nav','main','aside','hgroup','figure','figcaption','details','summary','dialog','address'].forEach(function(t){TAG_CATS[t]=_tl;});
+        ['p','h1','h2','h3','h4','h5','h6','span','strong','em','b','i','u','s','small','big','mark','sub','sup','abbr','cite','code','kbd','samp','var','del','ins','time','data','ruby','rt','rp','bdi','bdo','q','pre','blockquote','hr','br','wbr','noscript','figcaption','caption','legend','summary'].forEach(function(t){TAG_CATS[t]=_tt;});
+        ['form','input','button','select','option','optgroup','textarea','label','fieldset','datalist','output','progress','meter','keygen'].forEach(function(t){TAG_CATS[t]=_tf;});
+        ['img','video','audio','canvas','svg','source','track','iframe','embed','object','picture'].forEach(function(t){TAG_CATS[t]=_tm;});
+        ['table','thead','tbody','tfoot','tr','td','th','colgroup','col'].forEach(function(t){TAG_CATS[t]=_ta;});
+        ['ul','ol','li','dl','dt','dd','dir','menu','menuitem'].forEach(function(t){TAG_CATS[t]=_tl2;});
+        ['html','head','body','title','meta','link','base','style','script','template','isindex'].forEach(function(t){TAG_CATS[t]=_th;});
+        ['font','center','marquee','strike','tt','frame','frameset','xmp','spacer','bgsound','basefont','applet','nobr','noembed','acronym','big','blink'].forEach(function(t){TAG_CATS[t]=_td;});
+        TAG_CATS['a'] = _tk;
+
         function tokenizeLine(line) {
             var tokens = [];
             var i = 0;
@@ -844,6 +871,17 @@ function generateLiveWebviewHtml(config: SnapshotConfig): string {
                 if (line[i] === '/' && i + 1 < line.length && line[i+1] === '/') {
                     tokens.push({ text: line.substring(i), type: 'comment' });
                     break;
+                }
+                if (line[i] === '<' && i + 1 < line.length && /[a-zA-Z\/]/.test(line[i+1])) {
+                    var j = i + 1;
+                    if (line[j] === '/') j++;
+                    var si = j;
+                    while (j < line.length && /[a-zA-Z0-9_\-]/.test(line[j])) j++;
+                    var tname = line.substring(si, j).toLowerCase();
+                    var ttype = TAG_CATS[tname] || 'tag';
+                    while (j < line.length && line[j] !== '>') j++;
+                    if (j < line.length && line[j] === '>') j++;
+                    tokens.push({ text: line.substring(i, j), type: ttype }); i = j; continue;
                 }
                 if (line[i] === '<' && line.substring(i, i+4) === '<!--') {
                     var end = line.indexOf('-->', i+4);
